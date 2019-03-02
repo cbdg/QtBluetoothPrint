@@ -1,0 +1,10 @@
+﻿<RCC>
+    <qresource prefix="/">
+        <file>AppIcon60x60@2x.png</file>
+        <file>icon_m_coin.png</file>
+        <file>testqrcode.png</file>
+        <file>test.bmp</file>
+        <file>market.png</file>
+        <file>20180520000759880.png</file>
+    </qresource>
+</RCC>
