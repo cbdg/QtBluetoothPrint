@@ -13,6 +13,8 @@ class MBluetoothDevice : public QObject
     Q_PROPERTY(QString uuid READ uuid WRITE setUuid NOTIFY uuidChanged)
     Q_PROPERTY(bool isPaired READ isPaired WRITE setIsPaired NOTIFY isPairedChanged)
     Q_PROPERTY(bool isConnected READ isConnected WRITE setIsConnected NOTIFY isConnectedChanged)
+    Q_PROPERTY(quint8 majorDeviceClass READ majorDeviceClass CONSTANT)
+    Q_PROPERTY(quint8 minorDeviceClass READ minorDeviceClass CONSTANT)
 public:
     explicit MBluetoothDevice(QObject *parent = nullptr);
     // Q_D private 必需要有析构函数
@@ -38,6 +40,10 @@ public:
     void setDeviceInfo(const QBluetoothDeviceInfo &deviceInfo);
     void setDeviceAddress(const QBluetoothAddress &deviceAddress);
     void setDeviceUuid(const QBluetoothUuid &uuid);
+
+    quint8 majorDeviceClass();
+    quint8 minorDeviceClass();
+
 
 signals:
     void deviceNameChanged();

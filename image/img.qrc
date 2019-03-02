@@ -6,5 +6,16 @@
         <file>test.bmp</file>
         <file>market.png</file>
         <file>20180520000759880.png</file>
+        <file>bluetooth/buletoth.png</file>
+        <file>bluetooth/car.png</file>
+        <file>bluetooth/computer.png</file>
+        <file>bluetooth/headmusic.png</file>
+        <file>bluetooth/keyborder.png</file>
+        <file>bluetooth/micphone.png</file>
+        <file>bluetooth/mobilephone.png</file>
+        <file>bluetooth/mouse.png</file>
+        <file>bluetooth/printer.png</file>
+        <file>bluetooth/speaker.png</file>
+        <file>bluetooth/wathch.png</file>
     </qresource>
 </RCC>

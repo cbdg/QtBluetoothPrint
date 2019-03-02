@@ -275,16 +275,102 @@ ApplicationWindow {
                             anchors.bottom: parent.bottom
                         }
 
-                        Text {
-                            anchors.left: parent.left
-                            anchors.leftMargin: 16
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: qsTr("%1(%2)").arg(modelData.deviceName).arg(Qt.platform.os == "ios" ? modelData.uuid : modelData.address)
+                        Row {
+                            anchors.fill: parent
+                            anchors.leftMargin: 16;
+                            anchors.rightMargin: 16;
+                            spacing: 10;
+
+                            Image {
+                                anchors.verticalCenter: parent.verticalCenter
+                                height: 20
+                                width: height
+                                source: deviceIcon(modelData.majorDeviceClass, modelData.minorDeviceClass)
+                            }
+
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: qsTr("%1(%2)").arg(modelData.deviceName).arg(Qt.platform.os == "ios" ? modelData.uuid : modelData.address)
+                            }
                         }
                     }
                 }
             }
         }
+    }
+
+    function deviceIcon(majorDeviceClass, minorDeviceClass)
+    {
+        var iconStr = "qrc:/bluetooth/buletoth.png";
+        switch (majorDeviceClass) {
+        case 0://QBluetoothDeviceInfo::MiscellaneousDevice:
+            iconStr = "qrc:/bluetooth/buletoth.png";
+            break;
+        case 1://QBluetoothDeviceInfo::ComputerDevice
+            iconStr = "qrc:/bluetooth/computer.png";
+            break;
+        case 2://QBluetoothDeviceInfo::PhoneDevice
+            iconStr = "qrc:/bluetooth/mobilephone.png";
+            break;
+        case 3://QBluetoothDeviceInfo::LANAccessDevice
+            iconStr = "qrc:/bluetooth/buletoth.png";
+            break;
+        case 4://QBluetoothDeviceInfo::AudioVideoDevice
+            iconStr = "qrc:/bluetooth/buletoth.png";
+            switch (minorDeviceClass) {
+            case 4://QBluetoothDeviceInfo::Microphone
+                iconStr = "qrc:/bluetooth/micphone.png";
+                break;
+            case 5://QBluetoothDeviceInfo::Loudspeaker
+                iconStr = "qrc:/bluetooth/speaker.png";
+                break;
+            case 6://QBluetoothDeviceInfo::Headphones
+                iconStr = "qrc:/bluetooth/headmusic.png";
+                break;
+            case 8://QBluetoothDeviceInfo::CarAudio
+                iconStr = "qrc:/bluetooth/car.png";
+                break;
+            }
+            break;
+        case 5://QBluetoothDeviceInfo::PeripheralDevice
+            iconStr = "qrc:/bluetooth/keyborder.png";
+            switch (minorDeviceClass) {
+            case 0x10://QBluetoothDeviceInfo::KeyboardPeripheral
+            case 0x30://QBluetoothDeviceInfo::KeyboardWithPointingDevicePeripheral
+                iconStr = "qrc:/bluetooth/keyborder.png";
+                break;
+            case 0x20://QBluetoothDeviceInfo::PointingDevicePeripheral
+                iconStr = "qrc:/bluetooth/mouse.png";
+                break;
+            }
+            break;
+        case 6://QBluetoothDeviceInfo::ImagingDevice
+            iconStr = "qrc:/bluetooth/printer.png";
+            switch (minorDeviceClass) {
+            case 0x20://QBluetoothDeviceInfo::ImagePrinter
+                iconStr = "qrc:/bluetooth/printer.png";
+                break;
+            }
+            break;
+        case 7://QBluetoothDeviceInfo::WearableDevice
+            iconStr = "qrc:/bluetooth/wathch.png";
+            break;
+        case 8://QBluetoothDeviceInfo::ToyDevice
+            iconStr = "qrc:/bluetooth/buletoth.png";
+            break;
+        case 9://QBluetoothDeviceInfo::HealthDevice
+            iconStr = "qrc:/bluetooth/buletoth.png";
+            break;
+        case 31://QBluetoothDeviceInfo::UncategorizedDevice
+            iconStr = "qrc:/bluetooth/buletoth.png";
+            break;
+        default:
+            iconStr = "qrc:/bluetooth/buletoth.png";
+            break;
+
+        }
+
+        return iconStr;
     }
 
     Component.onCompleted: {

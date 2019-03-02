@@ -125,3 +125,15 @@ void MBluetoothDevice::setDeviceUuid(const QBluetoothUuid &uuid)
     Q_D(MBluetoothDevice);
     d->bluetoothUuid = uuid;
 }
+
+quint8 MBluetoothDevice::majorDeviceClass()
+{
+    Q_D(MBluetoothDevice);
+    return quint8(d->bluetoothDeviceInfo.majorDeviceClass());
+}
+
+quint8 MBluetoothDevice::minorDeviceClass()
+{
+    Q_D(MBluetoothDevice);
+    return quint8(d->bluetoothDeviceInfo.minorDeviceClass());
+}
