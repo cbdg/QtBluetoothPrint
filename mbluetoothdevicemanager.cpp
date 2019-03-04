@@ -30,6 +30,7 @@ MBluetoothDeviceManagerPrivate::MBluetoothDeviceManagerPrivate(MBluetoothDeviceM
     discoveredDeviceModel = nullptr;
     bluetoothPrintCommand = nullptr;
     selectPrint = nullptr;
+    isWaitingConnectNewDevice = false;
 }
 
 
@@ -88,6 +89,7 @@ MBluetoothDeviceManager::MBluetoothDeviceManager(QObject *parent)
         d->bluetoothPrintCommand->setBluetoothSocket(d->bluetoothSocket);
         if (d->selectPrint) {
             d->selectPrint->setIsConnected(true);
+            d->selectPrint->setSocketConnectState(MBluetoothDevice::Connected);
         }
     });
     connect(d->bluetoothSocket, static_cast<void (QBluetoothSocket::*)(QBluetoothSocket::SocketError)>(&QBluetoothSocket::error)
@@ -96,6 +98,17 @@ MBluetoothDeviceManager::MBluetoothDeviceManager(QObject *parent)
     });
     connect(d->bluetoothSocket, &QBluetoothSocket::disconnected, [=](){
         qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"EEEEEEEEEEEEEEEEEEEEEEE disconnected"<<d->bluetoothSocket->state();
+        if (d->isWaitingConnectNewDevice) {
+
+
+            qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"======================="<<d->bluetoothSocket->state();
+            if (d->selectPrint) {
+                QString remoteAddressStr = d->selectPrint->address();
+                QBluetoothUuid uuid(QString("00001101-0000-1000-8000-00805F9B34FB"));
+                //        QBluetoothUuid uuid(QString("8401d6f1-2ce5-84af-3adc-06409e62d896"));
+                d->bluetoothSocket->connectToService(QBluetoothAddress(remoteAddressStr), uuid);
+            }
+        }
     });
 
     // 附近可用蓝牙列表初始化
@@ -232,10 +245,14 @@ void MBluetoothDeviceManager::connectPrinterWithSocket(MBluetoothDevice *device)
     QString remoteAddressStr = device->address();
     if (d->bluetoothSocket->state() == QBluetoothSocket::UnconnectedState) {
         QBluetoothUuid uuid(QString("00001101-0000-1000-8000-00805F9B34FB"));
-        //        QBluetoothUuid uuid(QString("8401d6f1-2ce5-84af-3adc-06409e62d896"));
         d->bluetoothSocket->connectToService(QBluetoothAddress(remoteAddressStr), uuid);
     } else {
-        //printTest();
+
+        if (d->bluetoothSocket->state() == QBluetoothSocket::ConnectedState) {
+            device->setSocketConnectState(MBluetoothDevice::Connecting);
+            d->bluetoothSocket->disconnectFromService();
+            d->isWaitingConnectNewDevice = true;
+        }
     }
 }
 
@@ -274,9 +291,10 @@ void MBluetoothDeviceManager::setPrintDevice(MBluetoothDevice *device)
     if (device) {
         if (d->selectPrint) {
             d->selectPrint->setIsConnected(false);
+            d->selectPrint->setSocketConnectState(MBluetoothDevice::Unconnect);
         }
         d->selectPrint = device;
-        d->selectPrint->setIsConnected(true);
+        //        d->selectPrint->setIsConnected(true);
         writeSelectDevice();
         connectPrinterWithSocket(device);
     }
@@ -290,7 +308,7 @@ void MBluetoothDeviceManager::newDeviceDiscovered(const QBluetoothDeviceInfo &de
             .arg(deviceInfo.name())
             .arg(deviceInfo.address().toString())
             .arg(deviceInfo.deviceUuid().toString());
-        qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"=============>>>>"<<newDevice<<deviceInfo.majorDeviceClass()<<deviceInfo.minorDeviceClass();
+//    qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"=============>>>>"<<newDevice<<deviceInfo.majorDeviceClass()<<deviceInfo.minorDeviceClass();
     //    qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"=============>>>>"<<d->localDevice->pairingStatus(deviceInfo.address());
 
     if (d->localDevice->pairingStatus(deviceInfo.address()) == QBluetoothLocalDevice::Unpaired) {
@@ -311,9 +329,14 @@ void MBluetoothDeviceManager::newDeviceDiscovered(const QBluetoothDeviceInfo &de
             int last = d->pairedDevices->size();
             d->pairedDeviceModel->updateInertRow(first, --last);
 
+            // 默认上次选择的设备
             if (d->selectPrint) {
                 if (d->selectPrint->address() == btDevice->address()) {
                     btDevice->setIsConnected(true);
+
+                    // TODO: delete first one
+                    //d->selectPrint->deleteLater();
+                    d->selectPrint = btDevice;
                 }
             }
         }

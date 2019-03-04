@@ -22,6 +22,8 @@ public:
     bool isPaired;
     bool isConnected;
 
+    MBluetoothDevice::SOCKETSTATE socketConnectState;
+
 private:
     Q_DECLARE_PUBLIC(MBluetoothDevice)
 };

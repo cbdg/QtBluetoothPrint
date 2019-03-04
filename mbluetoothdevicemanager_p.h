@@ -29,6 +29,8 @@ public:
 
     MBluetoothDevice *selectPrint;
 
+    bool isWaitingConnectNewDevice;
+
 private:
     Q_DECLARE_PUBLIC(MBluetoothDeviceManager)
 

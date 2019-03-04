@@ -55,11 +55,29 @@ Rectangle {
                     anchors.bottom: parent.bottom
                 }
 
-                Text {
-                    anchors.left: parent.left
-                    anchors.leftMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: qsTr("%1(%2)").arg(btDevice.deviceName).arg(Qt.platform.os == "ios" ? btDevice.uuid : btDevice.address)
+                //                Text {
+                //                    anchors.left: parent.left
+                //                    anchors.leftMargin: 16
+                //                    anchors.verticalCenter: parent.verticalCenter
+                //                    text: qsTr("%1(%2)").arg(btDevice.deviceName).arg(Qt.platform.os == "ios" ? btDevice.uuid : btDevice.address)
+                //                }
+                Row {
+                    anchors.fill: parent
+                    anchors.leftMargin: 16;
+                    anchors.rightMargin: 16;
+                    spacing: 10;
+
+                    Image {
+                        anchors.verticalCenter: parent.verticalCenter
+                        height: 20
+                        width: height
+                        source: deviceIcon(btDevice.majorDeviceClass, btDevice.minorDeviceClass)
+                    }
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: qsTr("%1(%2)").arg(btDevice.deviceName).arg(Qt.platform.os == "ios" ? btDevice.uuid : btDevice.address)
+                    }
                 }
             }
 
@@ -82,12 +100,21 @@ Rectangle {
                     color: btDevice.isConnected ? "#d7d7d7" : "black"
                 }
 
+                BusyIndicator {
+                    anchors.right: parent.right
+                    anchors.rightMargin: 16
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 30
+                    height: width
+                    visible: running
+                    running: btDevice.socketConnectState == MBluetoothDevice.Connecting
+                }
+
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
                         if (!btDevice.isConnected) {
                             btManager.setPrintDevice(btDevice)
-                            btManager.connectPrinterWithSocket(btDevice)
                         }
                     }
                 }

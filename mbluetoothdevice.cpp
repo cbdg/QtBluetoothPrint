@@ -16,6 +16,7 @@ MBluetoothDevicePrivate::MBluetoothDevicePrivate(MBluetoothDevice *parent)
 
     isPaired = false;
     isConnected = false;
+    socketConnectState = MBluetoothDevice::Unconnect;
 }
 
 
@@ -124,6 +125,19 @@ void MBluetoothDevice::setDeviceUuid(const QBluetoothUuid &uuid)
 {
     Q_D(MBluetoothDevice);
     d->bluetoothUuid = uuid;
+}
+
+MBluetoothDevice::SOCKETSTATE MBluetoothDevice::socketConnectState()
+{
+    Q_D(MBluetoothDevice);
+    return d->socketConnectState;
+}
+
+void MBluetoothDevice::setSocketConnectState(MBluetoothDevice::SOCKETSTATE connecteState)
+{
+    Q_D(MBluetoothDevice);
+    d->socketConnectState = connecteState;
+    emit socketConnectStateChanged();
 }
 
 quint8 MBluetoothDevice::majorDeviceClass()

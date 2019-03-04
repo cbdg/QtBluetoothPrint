@@ -8,14 +8,24 @@ class MBluetoothDevicePrivate;
 class MBluetoothDevice : public QObject
 {
     Q_OBJECT
+    Q_ENUMS(SOCKETSTATE)
     Q_PROPERTY(QString deviceName READ deviceName WRITE setDeviceName NOTIFY deviceNameChanged)
     Q_PROPERTY(QString address READ address WRITE setAddress NOTIFY addressChanged)
     Q_PROPERTY(QString uuid READ uuid WRITE setUuid NOTIFY uuidChanged)
     Q_PROPERTY(bool isPaired READ isPaired WRITE setIsPaired NOTIFY isPairedChanged)
     Q_PROPERTY(bool isConnected READ isConnected WRITE setIsConnected NOTIFY isConnectedChanged)
+    Q_PROPERTY(SOCKETSTATE socketConnectState READ socketConnectState WRITE setSocketConnectState NOTIFY socketConnectStateChanged)
     Q_PROPERTY(quint8 majorDeviceClass READ majorDeviceClass CONSTANT)
     Q_PROPERTY(quint8 minorDeviceClass READ minorDeviceClass CONSTANT)
 public:
+
+    enum SOCKETSTATE {
+        Unconnect,
+        Connected,
+        Connecting,
+        Unknow
+    };
+
     explicit MBluetoothDevice(QObject *parent = nullptr);
     // Q_D private 必需要有析构函数
     // qscopedpointer.h:57: error: invalid application of 'sizeof' to incomplete type 'MBluetoothDevicePrivate'
@@ -41,6 +51,9 @@ public:
     void setDeviceAddress(const QBluetoothAddress &deviceAddress);
     void setDeviceUuid(const QBluetoothUuid &uuid);
 
+    SOCKETSTATE socketConnectState();
+    void setSocketConnectState(SOCKETSTATE connecteState);
+
     quint8 majorDeviceClass();
     quint8 minorDeviceClass();
 
@@ -51,6 +64,7 @@ signals:
     void uuidChanged();// 没有任何作用，只是为了消除 qml 烦人的警告
     void isPairedChanged();
     void isConnectedChanged();
+    void socketConnectStateChanged();
 
 public slots:
 

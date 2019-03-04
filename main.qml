@@ -28,9 +28,10 @@ ApplicationWindow {
         anchors.fill: parent
 
         contentWidth: width;
-        contentHeight: childrenRect.height
+        contentHeight: col.height
 
         Column {
+            id: col
             width: parent.width
             // localdevice
             Column {
@@ -189,11 +190,42 @@ ApplicationWindow {
                              anchors.bottom: parent.bottom
                          }
 
-                         Text {
+//                         Text {
+//                             anchors.left: parent.left
+//                             anchors.leftMargin: 16
+//                             anchors.verticalCenter: parent.verticalCenter
+//                             text:qsTr("%1(%2)").arg(modelData.deviceName).arg(modelData.address)
+//                         }
+                         Row {
                              anchors.left: parent.left
-                             anchors.leftMargin: 16
+                             anchors.leftMargin: 16;
                              anchors.verticalCenter: parent.verticalCenter
-                             text:qsTr("%1(%2)").arg(modelData.deviceName).arg(modelData.address)
+                             spacing: 10;
+
+                             Image {
+                                 anchors.verticalCenter: parent.verticalCenter
+                                 height: 20
+                                 width: height
+                                 source: deviceIcon(modelData.majorDeviceClass, modelData.minorDeviceClass)
+                             }
+
+                             Text {
+                                 anchors.verticalCenter: parent.verticalCenter
+                                 text: qsTr("%1(%2)(Major %3,Minor %4)")
+                                 .arg(modelData.deviceName)
+                                 .arg(Qt.platform.os == "ios" ? modelData.uuid : modelData.address)
+                                 .arg(modelData.majorDeviceClass).arg(modelData.minorDeviceClass)
+                             }
+                         }
+
+                         Image {
+                             anchors.right: parent.right
+                             anchors.rightMargin: 16;
+                             anchors.verticalCenter: parent.verticalCenter
+                             width: 20
+                             height: width
+                             source: "qrc:/correct.png"
+                             visible: modelData.isConnected
                          }
                      }
                  }
@@ -290,7 +322,10 @@ ApplicationWindow {
 
                             Text {
                                 anchors.verticalCenter: parent.verticalCenter
-                                text: qsTr("%1(%2)").arg(modelData.deviceName).arg(Qt.platform.os == "ios" ? modelData.uuid : modelData.address)
+                                text: qsTr("%1(%2)(Major %3,Minor %4)")
+                                .arg(modelData.deviceName)
+                                .arg(Qt.platform.os == "ios" ? modelData.uuid : modelData.address)
+                                .arg(modelData.majorDeviceClass).arg(modelData.minorDeviceClass)
                             }
                         }
                     }

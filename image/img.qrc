@@ -17,5 +17,7 @@
         <file>bluetooth/printer.png</file>
         <file>bluetooth/speaker.png</file>
         <file>bluetooth/wathch.png</file>
+        <file>correct.png</file>
+        <file>20190304164724.png</file>
     </qresource>
 </RCC>
