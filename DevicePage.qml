@@ -115,7 +115,7 @@ Rectangle {
                     anchors.fill: parent
                     onClicked: {
                         if (!btDevice.isConnected) {
-                            btManager.setPrintDevice(btDevice)
+                            btManager.currentDevice = btDevice
                         }
                     }
                 }

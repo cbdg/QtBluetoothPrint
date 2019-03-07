@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QBluetoothDeviceInfo>
+#include <QBluetoothSocket>
 
 class MBluetoothDevicePrivate;
 class MBluetoothDevice : public QObject
@@ -14,6 +15,7 @@ class MBluetoothDevice : public QObject
     Q_PROPERTY(QString uuid READ uuid WRITE setUuid NOTIFY uuidChanged)
     Q_PROPERTY(bool isPaired READ isPaired WRITE setIsPaired NOTIFY isPairedChanged)
     Q_PROPERTY(bool isConnected READ isConnected WRITE setIsConnected NOTIFY isConnectedChanged)
+    Q_PROPERTY(bool isCurrentDevice READ isCurrentDevice WRITE setIsCurrentDevice NOTIFY isCurrentDeviceChanged)
     Q_PROPERTY(SOCKETSTATE socketConnectState READ socketConnectState WRITE setSocketConnectState NOTIFY socketConnectStateChanged)
     Q_PROPERTY(quint8 majorDeviceClass READ majorDeviceClass CONSTANT)
     Q_PROPERTY(quint8 minorDeviceClass READ minorDeviceClass CONSTANT)
@@ -51,6 +53,9 @@ public:
     bool isConnected();
     void setIsConnected(bool connected);
 
+    bool isCurrentDevice();
+    bool setIsCurrentDevice(bool current);
+
     void setDeviceInfo(const QBluetoothDeviceInfo &deviceInfo);
     void setDeviceAddress(const QBluetoothAddress &deviceAddress);
     void setDeviceUuid(const QBluetoothUuid &uuid);
@@ -70,18 +75,31 @@ public:
     int deviceType();
     void setDeviceType(int type);
 
+    void connectSocket();
+    void disconnectSocket();
+
+    QIODevice* deviceSocket();
+
 signals:
     void deviceNameChanged();
     void addressChanged();// 没有任何作用，只是为了消除 qml 烦人的警告
     void uuidChanged();// 没有任何作用，只是为了消除 qml 烦人的警告
     void isPairedChanged();
     void isConnectedChanged();
+    void isCurrentDeviceChanged();
     void socketConnectStateChanged();
     void ipAddressChanged();
     void portChanged();
     void deviceTypeChanged();
 
 public slots:
+    void bluetoothSocketConnected();
+    void bluetoothSocketError(QBluetoothSocket::SocketError error);
+    void bluetoothSocketDisconnected();
+
+    void tcpSocketConnected();
+    void tcpSocketError(QAbstractSocket::SocketError error);
+    void tcpSocketDisconnected();
 
 private:
     Q_DECLARE_PRIVATE(MBluetoothDevice)

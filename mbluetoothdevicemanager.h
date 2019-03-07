@@ -21,9 +21,9 @@ class MBluetoothDeviceManager : public QObject
     Q_PROPERTY(quint16 port READ port WRITE setPort NOTIFY portChanged)
     Q_PROPERTY(QString ipAddress READ ipAddress WRITE setIpAddress NOTIFY ipAddressChanged)
     Q_PROPERTY(QString bluetoothName READ bluetoothName WRITE setBluetoothName NOTIFY bluetoothNameChanged)
-
-//    Q_PROPERTY(MBluetoothDeviceList remoteDevice READ remoteDevice NOTIFY remoteDeviceChanged)
-//    Q_PROPERTY(MBluetoothDeviceList pairedDevice READ pairedDevice NOTIFY pairedDeviceChanged)
+    Q_PROPERTY(MBluetoothDevice* currentDevice READ currentDevice WRITE setCurrentDevice NOTIFY currentDeviceChanged)
+    Q_PROPERTY(MBluetoothDevice* wifiDevice READ wifiDevice WRITE setWifiDevice NOTIFY wifiDeviceChanged)
+    Q_PROPERTY(MBluetoothDevice* bluetoothDevice READ bluetoothDevice WRITE setBluetoothDevice NOTIFY bluetoothDeviceChanged)
 
 public:
     MBluetoothDeviceManager(QObject *parent = nullptr);
@@ -48,6 +48,15 @@ public:
     QString bluetoothName();
     void setBluetoothName(const QString &bleName);
 
+    MBluetoothDevice *currentDevice();
+    void setCurrentDevice(MBluetoothDevice *device);
+
+    MBluetoothDevice *wifiDevice();
+    void setWifiDevice(MBluetoothDevice *device);
+
+    MBluetoothDevice *bluetoothDevice();
+    void setBluetoothDevice(MBluetoothDevice *device);
+
     Q_INVOKABLE void switchLocalDeviceHostmodel();
     Q_INVOKABLE void startDiscoverDevice();
     Q_INVOKABLE void stopDiscoverDevice();
@@ -55,13 +64,10 @@ public:
     Q_INVOKABLE void connectPrinterWithSocket(MBluetoothDevice *device);
     Q_INVOKABLE void printTest();
     Q_INVOKABLE void printTakeoutOrder(const QJsonObject &jsonObj);
-
-    Q_INVOKABLE void wifiPrint();
+    Q_INVOKABLE void resetBluetoothPrint();
 
     Q_INVOKABLE MListModel *remoteDevice();
     Q_INVOKABLE MListModel *pairedDevice();
-
-    Q_INVOKABLE void setPrintDevice(MBluetoothDevice *device);
 
 signals:
     void localDeviceStatusChanged();
@@ -73,17 +79,20 @@ signals:
     void portChanged();
     void ipAddressChanged();
     void bluetoothNameChanged();
+    void currentDeviceChanged();
+    void wifiDeviceChanged();
+    void bluetoothDeviceChanged();
 
 public slots:
     void newDeviceDiscovered(const QBluetoothDeviceInfo &deviceInfo);
     void devicePaired(const QBluetoothAddress &address, QBluetoothLocalDevice::Pairing pairing);
-    void tcpSocketError(QAbstractSocket::SocketError &error);
 
 private:
     int retrieveDevice(QList<MBluetoothDevice*> *deviceList, const QBluetoothDeviceInfo &deviceInfo);
     int retrieveDeviceWithAddress(QList<MBluetoothDevice*> *deviceList, const QString &address);
     void readSelectDevice();
     void writeSelectDevice();
+    void createPrintDevice();
 
 private:
     Q_DECLARE_PRIVATE(MBluetoothDeviceManager)

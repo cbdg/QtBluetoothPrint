@@ -29,6 +29,8 @@ public:
     MListModel *pairedDeviceModel;
 
     MBluetoothDevice *selectPrint;
+    MBluetoothDevice *wifiPrint;
+    MBluetoothDevice *bluetoothPrint;
 
     QTcpSocket *tcpSocket;
 

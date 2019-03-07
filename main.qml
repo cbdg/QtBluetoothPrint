@@ -76,6 +76,7 @@ ApplicationWindow {
                         anchors.left: parent.left
                         anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter;
+                        height: parent.height
                         spacing: 10
                         Rectangle{
                             height: 20
@@ -138,6 +139,7 @@ ApplicationWindow {
                         anchors.left: parent.left
                         anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter;
+                        height: parent.height
                         spacing: 10
                         Rectangle{
                             height: 20;
@@ -236,6 +238,7 @@ ApplicationWindow {
                     Text {
                         anchors.centerIn: parent
                         text: qsTr("打印测试")
+                        color: bt.currentDevice ? ( bt.currentDevice.isConnected ? "black" : "#d7d7d7") :  "#d7d7d7"
                     }
 
                     Rectangle {
@@ -248,7 +251,7 @@ ApplicationWindow {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            bt.wifiPrint();
+                            bt.printTest();
                         }
                     }
                 }

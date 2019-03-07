@@ -9,6 +9,8 @@ Rectangle {
 
     function exitPage()
     {
+        bt.stopDiscoverDevice();
+        bt.resetBluetoothPrint();
         bluetoothPage.focus = false
         bluetoothPage.visible = false
         bluetoothPage.destroy();
@@ -17,6 +19,7 @@ Rectangle {
 
     function showDevicePage(deviceObj)
     {
+        bt.stopDiscoverDevice();
         var cmp = Qt.createComponent("DevicePage.qml");
         var qmlPage = cmp.createObject(bluetoothPage, {"btManager": bt, "btDevice":deviceObj})
 
@@ -230,32 +233,6 @@ Rectangle {
                         anchors.bottom: parent.bottom
                     }
                 }
-
-                Rectangle {
-                    width: parent.width
-                    height: 50
-
-                    Text {
-                        anchors.left: parent.left
-                        anchors.leftMargin: 16
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: qsTr("wifi打印")
-                    }
-
-                    Rectangle {
-                        width: parent.width
-                        height: 1
-                        color: "#d7d7d7"
-                        anchors.bottom: parent.bottom
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent;
-                        onClicked: {
-                            bt.wifiPrint();
-                        }
-                    }
-                }
             }
 
 
@@ -297,10 +274,6 @@ Rectangle {
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
-                                //bt.sendFileToRemote(modelData)
-                                //bt.pairingToRemote(modelData)
-                                //bt.connectPrinter(modelData)
-                                //bt.connectPrinterWithSocket(modelData)
                                 showDevicePage(modelData)
                             }
                         }
@@ -312,12 +285,6 @@ Rectangle {
                             anchors.bottom: parent.bottom
                         }
 
-                        //                         Text {
-                        //                             anchors.left: parent.left
-                        //                             anchors.leftMargin: 16
-                        //                             anchors.verticalCenter: parent.verticalCenter
-                        //                             text:qsTr("%1(%2)").arg(modelData.deviceName).arg(modelData.address)
-                        //                         }
                         Row {
                             anchors.left: parent.left
                             anchors.leftMargin: 16;
@@ -344,7 +311,7 @@ Rectangle {
                             width: 20
                             height: width
                             source: "qrc:/correct.png"
-                            visible: modelData.isConnected
+                            visible: modelData.isCurrentDevice
                         }
                     }
                 }

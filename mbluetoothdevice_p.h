@@ -6,6 +6,8 @@
 #include <QBluetoothUuid>
 #include <QBluetoothDeviceInfo>
 
+class QBluetoothSocket;
+class QTcpSocket;
 class MBluetoothDevicePrivate
 {
 public:
@@ -24,10 +26,14 @@ public:
 
     bool isPaired;
     bool isConnected;
+    bool isCurrent;
 
     int deviceType; // 0 bluetooth; 1 wifi
 
     MBluetoothDevice::SOCKETSTATE socketConnectState;
+
+    QBluetoothSocket *bluetoothSocket;
+    QTcpSocket *tcpSocket;
 
 private:
     Q_DECLARE_PUBLIC(MBluetoothDevice)

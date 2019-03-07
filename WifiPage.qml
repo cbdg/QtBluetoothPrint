@@ -166,7 +166,7 @@ Rectangle {
                     anchors.leftMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
                     text: qsTr("连接打印机")
-//                    color: btDevice.isConnected ? "#d7d7d7" : "black"
+                    color: bt.wifiDevice ? (bt.wifiDevice.isConnected ? "#d7d7d7" : "black") :  "black"
                 }
 
                 BusyIndicator {
@@ -176,15 +176,14 @@ Rectangle {
                     width: 30
                     height: width
                     visible: running
-//                    running: btDevice.socketConnectState == MBluetoothDevice.Connecting
+                    running: bt.wifiDevice ? (bt.wifiDevice.socketConnectState == MBluetoothDevice.Connecting ? true : false) : false
                 }
 
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        if (!btDevice.isConnected) {
-                            bt.setPrintDevice(btDevice)
-                        }
+                        console.log("========================>>>>>>>>1", bt.wifiDevice, bt.wifiDevice.isConnected)
+                        bt.currentDevice = bt.wifiDevice;
                     }
                 }
             }
@@ -205,13 +204,13 @@ Rectangle {
                     anchors.leftMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
                     text: qsTr("打印测试")
-//                    color: btDevice.isConnected ? "black" : "#d7d7d7"
+                    color: bt.wifiDevice ? ( (bt.wifiDevice.isConnected) ? "black" : "#d7d7d7") :  "#d7d7d7"
                 }
 
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        if (btDevice.isConnected)
+                        if (bt.wifiDevice)
                             bt.printTest();
                     }
                 }
