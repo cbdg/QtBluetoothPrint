@@ -20,7 +20,8 @@ SOURCES += main.cpp \
     mbluetoothdevice.cpp \
     mbluetoothdevicemanager.cpp \
     mlistmodel.cpp \
-    morderprinter.cpp
+    morderprinter.cpp \
+    mnetworkprinter.cpp
 
 RESOURCES += qml.qrc
 RESOURCES += image/img.qrc
@@ -46,4 +47,5 @@ HEADERS += \
     mbluetoothdevicemanager.h \
     mbluetoothdevicemanager_p.h \
     mlistmodel.h \
-    morderprinter.h
+    morderprinter.h \
+    mnetworkprinter.h

@@ -8,14 +8,16 @@
 #include <QTextCodec>
 #include "cbinarization.h"
 
-MBluetoothPrintCommand::MBluetoothPrintCommand(QBluetoothSocket *bluetoothSocket, QObject *parent)
+//MBluetoothPrintCommand::MBluetoothPrintCommand(QBluetoothSocket *bluetoothSocket, QObject *parent)
+MBluetoothPrintCommand::MBluetoothPrintCommand(QIODevice *bluetoothSocket, QObject *parent)
     : QObject(parent)
     , p_bluetoothSocket(bluetoothSocket)
 {
 
 }
 
-void MBluetoothPrintCommand::setBluetoothSocket(QBluetoothSocket *bluetoothSocket)
+//void MBluetoothPrintCommand::setBluetoothSocket(QBluetoothSocket *bluetoothSocket)
+void MBluetoothPrintCommand::setBluetoothSocket(QIODevice *bluetoothSocket)
 {
     p_bluetoothSocket = bluetoothSocket;
 }

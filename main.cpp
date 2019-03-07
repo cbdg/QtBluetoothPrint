@@ -3,6 +3,7 @@
 #include "mbluetooth.h"
 #include "mbluetoothdevicemanager.h"
 #include "mlistmodel.h"
+#include "mnetworkprinter.h"
 
 int main(int argc, char *argv[])
 {
@@ -14,6 +15,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<MBluetoothDeviceManager>("com.mofing.bluetooth", 1, 0, "MBluetoothDeviceManager");
     qmlRegisterType<MBluetoothDevice>("com.mofing.bluetooth", 1, 0, "MBluetoothDevice");
     qmlRegisterType<MListModel>("com.mofing.bluetooth", 1, 0, "MListModel");
+    qmlRegisterType<MNetworkPrinter>("com.mofing.bluetooth", 1, 0, "MNetworkPrinter");
 
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())

@@ -91,7 +91,7 @@ void MOrderPrinter::printTest()
     _printCom->printContent();
 
     _printCom->setAlignment(1);
-    _printCom->printBitmapwithPath(":/20180520000759880.png");
+    _printCom->printBitmapwithPath(":/20190304164724.png");
     _printCom->initionPrint();
 
     _printCom->setAlignment(1);
@@ -102,7 +102,8 @@ void MOrderPrinter::printTest()
     _printCom->printAndFeedLines(5);
 }
 
-void MOrderPrinter::initPrintCom(QBluetoothSocket *bluetoothSocket)
+//void MOrderPrinter::initPrintCom(QBluetoothSocket *bluetoothSocket)
+void MOrderPrinter::initPrintCom(QIODevice *bluetoothSocket)
 {
     _printCom = new MBluetoothPrintCommand(bluetoothSocket, this);
 }

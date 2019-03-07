@@ -11,6 +11,7 @@ Rectangle {
     function exitPage()
     {
         devicePage.focus = false
+        devicePage.parent.focus = true
         devicePage.visible = false
         devicePage.destroy();
     }

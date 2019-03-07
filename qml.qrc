@@ -1,8 +1,11 @@
-<!DOCTYPE RCC>
-<RCC version="1.0">
+<RCC>
     <qresource prefix="/">
         <file>main.qml</file>
         <file>DevicePage.qml</file>
         <file>qtquickcontrols2.conf</file>
+        <file>MBluetoothList.qml</file>
+        <file>WifiPage.qml</file>
+        <file>InputPage.qml</file>
+        <file>ReceiptsPage.qml</file>
     </qresource>
 </RCC>

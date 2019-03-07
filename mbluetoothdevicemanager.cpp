@@ -11,6 +11,8 @@
 #include <QTextCodec>
 #include <QSettings>
 #include <QDir>
+#include <QTcpSocket>
+#include <QHostAddress>
 #include "mbluetoothprintcommand.h"
 #include "morderprinter.h"
 
@@ -31,6 +33,19 @@ MBluetoothDeviceManagerPrivate::MBluetoothDeviceManagerPrivate(MBluetoothDeviceM
     bluetoothPrintCommand = nullptr;
     selectPrint = nullptr;
     isWaitingConnectNewDevice = false;
+
+    // wifi
+    tcpSocket = nullptr;
+
+    printType = 1;
+    receiptsType = 0;
+
+    lastBluetoothName = "";
+    lastBluetoothAddress = "";
+    lastBluetoothUuid = "";
+
+    lastWifiIpAddress = "";
+    lastWifiPor = 8266; // 目前通过遍历 恩叶 NP58-W/NP58-WB 票据 + 标签 两用打印机 端口号为： 8266 可用
 }
 
 
@@ -87,6 +102,7 @@ MBluetoothDeviceManager::MBluetoothDeviceManager(QObject *parent)
     connect(d->bluetoothSocket, &QBluetoothSocket::connected, [=](){
         qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"XXXXXXXXXXXXXXXXXXXX QBluetoothSocket::connected";
         d->bluetoothPrintCommand->setBluetoothSocket(d->bluetoothSocket);
+        emit bluetoothNameChanged();
         if (d->selectPrint) {
             d->selectPrint->setIsConnected(true);
             d->selectPrint->setSocketConnectState(MBluetoothDevice::Connected);
@@ -126,6 +142,19 @@ MBluetoothDeviceManager::MBluetoothDeviceManager(QObject *parent)
     if (d->selectPrint) {
         connectPrinterWithSocket(d->selectPrint);
     }
+
+    d->tcpSocket = new QTcpSocket(this);
+    connect(d->tcpSocket, &QTcpSocket::connected, [=](){
+        qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"-------------------------------QTcpSocket::connected"<<d->lastWifiPor;
+    });
+    //    connect(d->tcpSocket, static_cast<void(QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error),
+    //            [=](QAbstractSocket::SocketError socketError){
+    //        qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"==============================QAbstractSocket::SocketError"<<socketError<<d->lastWifiPor;
+    //        d->lastWifiPor++;
+    //        if (d->lastWifiPor < 9100) //65535
+    //            d->tcpSocket->connectToHost(QHostAddress("192.168.31.157"), d->lastWifiPor);
+    //    });
+    connect(d->tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(tcpSocketError(QAbstractSocket::SocketError)));
 }
 
 MBluetoothDeviceManager::~MBluetoothDeviceManager()
@@ -183,6 +212,87 @@ bool MBluetoothDeviceManager::discoverIsActive()
     return false;
 }
 
+int MBluetoothDeviceManager::printType()
+{
+    Q_D(MBluetoothDeviceManager);
+    return d->printType;
+}
+
+void MBluetoothDeviceManager::setPrintType(int type)
+{
+    Q_D(MBluetoothDeviceManager);
+    if (d->printType == type)
+        return;
+
+    d->printType = type;
+    emit printTypeChanged();
+    writeSelectDevice();
+}
+
+int MBluetoothDeviceManager::receiptsType()
+{
+    Q_D(MBluetoothDeviceManager);
+
+    return d->receiptsType;
+}
+
+void MBluetoothDeviceManager::setReceiptsType(int type)
+{
+    Q_D(MBluetoothDeviceManager);
+    if (d->receiptsType == type)
+        return;
+
+    d->receiptsType = type;
+    emit receiptsTypeChanged();
+    writeSelectDevice();
+}
+
+int MBluetoothDeviceManager::port()
+{
+    Q_D(MBluetoothDeviceManager);
+
+    return d->lastWifiPor;
+}
+
+void MBluetoothDeviceManager::setPort(int p)
+{
+    Q_D(MBluetoothDeviceManager);
+    if (d->lastWifiPor == quint16(p))
+        return;
+
+    d->lastWifiPor = quint16(p);
+    emit portChanged();
+}
+
+QString MBluetoothDeviceManager::ipAddress()
+{
+    Q_D(MBluetoothDeviceManager);
+
+    return d->lastWifiIpAddress.isEmpty() ? QStringLiteral("设置WIFI打印机") : d->lastWifiIpAddress;
+}
+
+void MBluetoothDeviceManager::setIpAddress(const QString &ip)
+{
+    Q_D(MBluetoothDeviceManager);
+    qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"=================="<<ip;
+    if (d->lastWifiIpAddress == ip)
+        return;
+
+    d->lastWifiIpAddress = ip;
+    emit ipAddressChanged();
+}
+
+QString MBluetoothDeviceManager::bluetoothName()
+{
+    Q_D(MBluetoothDeviceManager);
+    return d->lastBluetoothName.isEmpty() ? QStringLiteral("设置蓝牙打印机") : d->lastBluetoothName;
+}
+
+void MBluetoothDeviceManager::setBluetoothName(const QString &bleName)
+{
+
+}
+
 void MBluetoothDeviceManager::switchLocalDeviceHostmodel()
 {
     Q_D(MBluetoothDeviceManager);
@@ -199,8 +309,10 @@ void MBluetoothDeviceManager::startDiscoverDevice()
 {
     Q_D(MBluetoothDeviceManager);
 
-    MBluetoothDeviceList *list;
+    d->discoveryAgent->stop();
 
+    MBluetoothDeviceList *list;
+    qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"=================";
     list = d->pairedDevices;
 
     d->pairedDevices = new MBluetoothDeviceList();
@@ -209,21 +321,31 @@ void MBluetoothDeviceManager::startDiscoverDevice()
     while (!list->isEmpty()) {
         list->takeLast()->deleteLater();
     }
+    qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"=================";
     delete list;
+    qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"=================";
 
     list = d->discoveredDevices;
 
+    qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"=================";
     d->discoveredDevices = new MBluetoothDeviceList();
     d->discoveredDeviceModel->setDataList(d->discoveredDevices);
     d->discoveredDeviceModel->resetAll();
     while (!list->isEmpty()) {
         list->takeLast()->deleteLater();
     }
+    qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"=================";
     delete list;
+    qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"=================";
 
-    d->discoveryAgent->stop();
     d->discoveryAgent->start();
     emit discoverIsActiveChanged();
+}
+
+void MBluetoothDeviceManager::stopDiscoverDevice()
+{
+    Q_D(MBluetoothDeviceManager);
+    d->discoveryAgent->stop();
 }
 
 void MBluetoothDeviceManager::pairingToRemote(MBluetoothDevice *device)
@@ -242,17 +364,21 @@ void MBluetoothDeviceManager::pairingToRemote(MBluetoothDevice *device)
 void MBluetoothDeviceManager::connectPrinterWithSocket(MBluetoothDevice *device)
 {
     Q_D(MBluetoothDeviceManager);
-    QString remoteAddressStr = device->address();
-    if (d->bluetoothSocket->state() == QBluetoothSocket::UnconnectedState) {
-        QBluetoothUuid uuid(QString("00001101-0000-1000-8000-00805F9B34FB"));
-        d->bluetoothSocket->connectToService(QBluetoothAddress(remoteAddressStr), uuid);
-    } else {
+    if (device->deviceType() == 0) {
+        QString remoteAddressStr = device->address();
+        if (d->bluetoothSocket->state() == QBluetoothSocket::UnconnectedState) {
+            QBluetoothUuid uuid(QString("00001101-0000-1000-8000-00805F9B34FB"));
+            d->bluetoothSocket->connectToService(QBluetoothAddress(remoteAddressStr), uuid);
+        } else {
 
-        if (d->bluetoothSocket->state() == QBluetoothSocket::ConnectedState) {
-            device->setSocketConnectState(MBluetoothDevice::Connecting);
-            d->bluetoothSocket->disconnectFromService();
-            d->isWaitingConnectNewDevice = true;
+            if (d->bluetoothSocket->state() == QBluetoothSocket::ConnectedState) {
+                device->setSocketConnectState(MBluetoothDevice::Connecting);
+                d->bluetoothSocket->disconnectFromService();
+                d->isWaitingConnectNewDevice = true;
+            }
         }
+    } else {
+        d->tcpSocket->connectToHost(QHostAddress(device->ipAddress()), device->port());
     }
 }
 
@@ -271,6 +397,15 @@ void MBluetoothDeviceManager::printTakeoutOrder(const QJsonObject &jsonObj)
     orderPrinter.initPrintCom(d->bluetoothSocket);
     QObject obj;
     orderPrinter.printTakeoutOrder(&obj);
+}
+
+void MBluetoothDeviceManager::wifiPrint()
+{
+    Q_D(MBluetoothDeviceManager);
+
+    MOrderPrinter orderPrinter(this);
+    orderPrinter.initPrintCom(d->tcpSocket);
+    orderPrinter.printTest();
 }
 
 MListModel *MBluetoothDeviceManager::remoteDevice()
@@ -295,6 +430,15 @@ void MBluetoothDeviceManager::setPrintDevice(MBluetoothDevice *device)
         }
         d->selectPrint = device;
         //        d->selectPrint->setIsConnected(true);
+        if (device->deviceType() == 0) {
+            d->lastBluetoothName = device->deviceName();
+            d->lastBluetoothAddress = device->address();
+            d->lastBluetoothUuid = device->uuid();
+        } else {
+            d->lastWifiIpAddress = device->ipAddress();
+            d->lastWifiPor = device->port();
+        }
+
         writeSelectDevice();
         connectPrinterWithSocket(device);
     }
@@ -308,7 +452,7 @@ void MBluetoothDeviceManager::newDeviceDiscovered(const QBluetoothDeviceInfo &de
             .arg(deviceInfo.name())
             .arg(deviceInfo.address().toString())
             .arg(deviceInfo.deviceUuid().toString());
-//    qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"=============>>>>"<<newDevice<<deviceInfo.majorDeviceClass()<<deviceInfo.minorDeviceClass();
+    qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"=============>>>>"<<newDevice<<deviceInfo.majorDeviceClass()<<deviceInfo.minorDeviceClass();
     //    qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"=============>>>>"<<d->localDevice->pairingStatus(deviceInfo.address());
 
     if (d->localDevice->pairingStatus(deviceInfo.address()) == QBluetoothLocalDevice::Unpaired) {
@@ -375,6 +519,15 @@ void MBluetoothDeviceManager::devicePaired(const QBluetoothAddress &address, QBl
     }
 }
 
+void MBluetoothDeviceManager::tcpSocketError(QAbstractSocket::SocketError &error)
+{
+    Q_D(MBluetoothDeviceManager);
+    qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"==============================QAbstractSocket::SocketError"<<error<<d->lastWifiPor;
+    //    d->lastWifiPor++;
+    //    if (d->lastWifiPor < 9100) //65535
+    //        d->tcpSocket->connectToHost(QHostAddress("192.168.31.157"), d->lastWifiPor);
+}
+
 int MBluetoothDeviceManager::retrieveDevice(QList<MBluetoothDevice *> *deviceList, const QBluetoothDeviceInfo &deviceInfo)
 {
 #if defined(Q_OS_OSX) || defined(Q_OS_IOS)
@@ -416,25 +569,36 @@ void MBluetoothDeviceManager::readSelectDevice()
     Q_D(MBluetoothDeviceManager);
     QString settingpath;
 #ifdef ANDROID
-    settingpath = QString("%1/bluetooth.ini").arg(getenv("HOME"));
+    settingpath = QString("%1/printer.ini").arg(getenv("HOME"));
 #else
-    settingpath = QDir::currentPath() + "/bluetooth.ini";
+    settingpath = QDir::currentPath() + "/printer.ini";
 #endif
-    QString printName;
-    QString printAddress;
-    QString printUuid;
+
     QSettings settings(settingpath, QSettings::IniFormat);
+
     settings.beginGroup("Print");
-    printName = settings.value("PrintName").toString();
-    printAddress = settings.value("PrintAddress").toString();
-    printUuid = settings.value("PrintUuid").toString();
+    d->printType = settings.value("PrintType", 1).toInt();
+    d->receiptsType = settings.value("ReceiptsType", 0).toInt();
     settings.endGroup();
-    if (!printAddress.isEmpty() || !printUuid.isEmpty()) {
+
+    settings.beginGroup("Bluetooth");
+    d->lastBluetoothName = settings.value("BluetoothName").toString();
+    d->lastBluetoothAddress = settings.value("BluetoothAddress").toString();
+    d->lastBluetoothUuid = settings.value("BluetoothUuid").toString();
+    settings.endGroup();
+    if (!d->lastBluetoothAddress.isEmpty() || !d->lastBluetoothUuid.isEmpty()) {
         d->selectPrint = new MBluetoothDevice(this);
-        d->selectPrint->setDeviceName(printName);
-        d->selectPrint->setAddress(printAddress);
-        d->selectPrint->setUuid(printUuid);
+        d->selectPrint->setDeviceName(d->lastBluetoothName);
+        d->selectPrint->setAddress(d->lastBluetoothAddress);
+        d->selectPrint->setUuid(d->lastBluetoothUuid);
     }
+
+    settings.beginGroup("Wifi");
+    d->lastWifiIpAddress = settings.value("IpAddress").toString();
+    d->lastWifiPor = settings.value("Por", 1024).toInt();
+    settings.endGroup();
+
+    qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<d->printType<<d->receiptsType<<d->lastBluetoothName<<d->lastBluetoothAddress<<d->lastBluetoothUuid<<d->lastWifiIpAddress<<d->lastWifiPor;
 }
 
 void MBluetoothDeviceManager::writeSelectDevice()
@@ -442,14 +606,24 @@ void MBluetoothDeviceManager::writeSelectDevice()
     Q_D(MBluetoothDeviceManager);
     QString settingpath;
 #ifdef ANDROID
-    settingpath = QString("%1/bluetooth.ini").arg(getenv("HOME"));
+    settingpath = QString("%1/printer.ini").arg(getenv("HOME"));
 #else
-    settingpath = QDir::currentPath() + "/bluetooth.ini";
+    settingpath = QDir::currentPath() + "/printer.ini";
 #endif
     QSettings settings(settingpath, QSettings::IniFormat);
     settings.beginGroup("Print");
-    settings.setValue("PrintName", d->selectPrint->deviceName());
-    settings.setValue("PrintAddress", d->selectPrint->address());
-    settings.setValue("PrintUuid", d->selectPrint->uuid());
+    settings.setValue("PrintType", d->printType);
+    settings.setValue("ReceiptsType", d->receiptsType);
+    settings.endGroup();
+
+    settings.beginGroup("Bluetooth");
+    settings.setValue("BluetoothName", d->lastBluetoothName);
+    settings.setValue("BluetoothAddress", d->lastBluetoothAddress);
+    settings.setValue("BluetoothUuid", d->lastBluetoothUuid);
+    settings.endGroup();
+
+    settings.beginGroup("Wifi");
+    settings.setValue("IpAddress", d->lastWifiIpAddress);
+    settings.setValue("Por", d->lastWifiPor);
     settings.endGroup();
 }

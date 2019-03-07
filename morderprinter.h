@@ -5,6 +5,7 @@
 
 class MBluetoothPrintCommand;
 class QBluetoothSocket;
+class QIODevice;
 class MOrderPrinter : public QObject
 {
     Q_OBJECT
@@ -15,7 +16,8 @@ public:
     void printTakeoutOrder(QObject *orderObj);
     void printTest();
 
-    void initPrintCom(QBluetoothSocket *bluetoothSocket);
+    //void initPrintCom(QBluetoothSocket *bluetoothSocket);
+    void initPrintCom(QIODevice *bluetoothSocket);
 
 signals:
 

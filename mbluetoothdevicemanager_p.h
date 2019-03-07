@@ -9,6 +9,7 @@
 class QBluetoothDeviceDiscoveryAgent;
 class QBluetoothSocket;
 class MBluetoothPrintCommand;
+class QTcpSocket;
 class MBluetoothDeviceManagerPrivate
 {
 public:
@@ -29,7 +30,19 @@ public:
 
     MBluetoothDevice *selectPrint;
 
+    QTcpSocket *tcpSocket;
+
     bool isWaitingConnectNewDevice;
+
+    int printType;// 1 bluetooth; 2 wifi; 0 unknow;
+    int receiptsType; // 0 32英文/行; 1 40英文/行; 2 48英文/行
+
+    QString lastBluetoothName;
+    QString lastBluetoothAddress;
+    QString lastBluetoothUuid;
+
+    QString lastWifiIpAddress;
+    quint16 lastWifiPor;
 
 private:
     Q_DECLARE_PUBLIC(MBluetoothDeviceManager)

@@ -17,6 +17,10 @@ class MBluetoothDevice : public QObject
     Q_PROPERTY(SOCKETSTATE socketConnectState READ socketConnectState WRITE setSocketConnectState NOTIFY socketConnectStateChanged)
     Q_PROPERTY(quint8 majorDeviceClass READ majorDeviceClass CONSTANT)
     Q_PROPERTY(quint8 minorDeviceClass READ minorDeviceClass CONSTANT)
+
+    Q_PROPERTY(QString ipAddress READ ipAddress WRITE setIpAddress NOTIFY ipAddressChanged)
+    Q_PROPERTY(quint16 port READ port WRITE setPort NOTIFY portChanged)
+    Q_PROPERTY(int deviceType READ deviceType WRITE setDeviceType NOTIFY deviceTypeChanged)
 public:
 
     enum SOCKETSTATE {
@@ -57,6 +61,14 @@ public:
     quint8 majorDeviceClass();
     quint8 minorDeviceClass();
 
+    QString ipAddress();
+    void setIpAddress(const QString &ip);
+
+    quint16 port();
+    void setPort(int p);
+
+    int deviceType();
+    void setDeviceType(int type);
 
 signals:
     void deviceNameChanged();
@@ -65,6 +77,9 @@ signals:
     void isPairedChanged();
     void isConnectedChanged();
     void socketConnectStateChanged();
+    void ipAddressChanged();
+    void portChanged();
+    void deviceTypeChanged();
 
 public slots:
 

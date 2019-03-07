@@ -3,15 +3,19 @@
 
 #include <QObject>
 #include <QBluetoothSocket>
+#include <QIODevice>
 #include <QByteArray>
 
 class MBluetoothPrintCommand : public QObject
 {
     Q_OBJECT
 public:
-    MBluetoothPrintCommand(QBluetoothSocket *bluetoothSocket, QObject *parent = nullptr);
+    //MBluetoothPrintCommand(QBluetoothSocket *bluetoothSocket, QObject *parent = nullptr);
+    MBluetoothPrintCommand(QIODevice *bluetoothSocket, QObject *parent = nullptr);
 
-    void setBluetoothSocket(QBluetoothSocket *bluetoothSocket);
+
+    //void setBluetoothSocket(QBluetoothSocket *bluetoothSocket);
+    void setBluetoothSocket(QIODevice *bluetoothSocket);
     /**
      * 方法说明：打印机初始化，必须是第一个打印命令0x1b,0x40
      */
@@ -78,7 +82,8 @@ public:
     void printAndFeedLines(int n);
 
 private:
-    QBluetoothSocket *p_bluetoothSocket;
+    //QBluetoothSocket *p_bluetoothSocket;
+    QIODevice *p_bluetoothSocket;
     QByteArray commandByteArray;
 };
 

@@ -19,8 +19,13 @@ public:
     QString address;
     QString uuid;
 
+    QString ipAddressStr;
+    qint16 port;
+
     bool isPaired;
     bool isConnected;
+
+    int deviceType; // 0 bluetooth; 1 wifi
 
     MBluetoothDevice::SOCKETSTATE socketConnectState;
 

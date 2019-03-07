@@ -17,6 +17,8 @@ MBluetoothDevicePrivate::MBluetoothDevicePrivate(MBluetoothDevice *parent)
     isPaired = false;
     isConnected = false;
     socketConnectState = MBluetoothDevice::Unconnect;
+
+    deviceType = 0;
 }
 
 
@@ -150,4 +152,52 @@ quint8 MBluetoothDevice::minorDeviceClass()
 {
     Q_D(MBluetoothDevice);
     return quint8(d->bluetoothDeviceInfo.minorDeviceClass());
+}
+
+QString MBluetoothDevice::ipAddress()
+{
+    Q_D(MBluetoothDevice);
+    return d->ipAddressStr;
+}
+
+void MBluetoothDevice::setIpAddress(const QString &ip)
+{
+    Q_D(MBluetoothDevice);
+
+    if (d->ipAddressStr == ip)
+        return;
+    d->ipAddressStr = ip;
+    emit ipAddressChanged();
+}
+
+quint16 MBluetoothDevice::port()
+{
+    Q_D(MBluetoothDevice);
+    return d->port;
+}
+
+void MBluetoothDevice::setPort(int p)
+{
+    Q_D(MBluetoothDevice);
+
+    if(d->port == quint16(p))
+        return;
+
+    d->port = quint16(p);
+    emit portChanged();
+}
+
+int MBluetoothDevice::deviceType()
+{
+    Q_D(MBluetoothDevice);
+    return d->deviceType;
+}
+
+void MBluetoothDevice::setDeviceType(int type)
+{
+    Q_D(MBluetoothDevice);
+    if (d->deviceType == type)
+        return;
+
+    d->deviceType = type;
 }
