@@ -48,7 +48,7 @@ QHash<int, QByteArray> MListModel::roleNames() const
     return hash;
 }
 
-void MListModel::setDataList(MBluetoothDeviceList *list)
+void MListModel::setDataList(MPrintDeviceList *list)
 {
     dataList = list;
 }
@@ -98,7 +98,7 @@ void MListModel::remove(int index)
     if(!dataList)
         return;
     if( index >=0 && index < count() ){
-        MBluetoothDevice *dataObj = dataList->at(index);
+        MPrintDevice *dataObj = dataList->at(index);
         dataList->removeAt(index);
         updateRemoveRow(index,index);
         if (dataObj) {
@@ -107,12 +107,12 @@ void MListModel::remove(int index)
     }
 }
 
-MBluetoothDevice *MListModel::takeAt(int index)
+MPrintDevice *MListModel::takeAt(int index)
 {
     if(!dataList)
         return NULL;
     if( index >=0 && index < count() ){
-        MBluetoothDevice *dataObj = dataList->takeAt(index);
+        MPrintDevice *dataObj = dataList->takeAt(index);
         updateRemoveRow(index,index);
         return dataObj;
     }
@@ -129,7 +129,7 @@ void MListModel::move(int index, int toIndex)
     }
 }
 
-void MListModel::insert(int index, MBluetoothDevice *obj)
+void MListModel::insert(int index, MPrintDevice *obj)
 {
     if( !dataList )
         return;

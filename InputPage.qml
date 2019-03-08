@@ -5,8 +5,8 @@ import com.mofing.bluetooth 1.0
 
 Rectangle {
     id: inputPage
-    property MBluetoothDeviceManager btManager: null
-    property MBluetoothDevice btDevice: null
+    property MPrintDeviceManager btManager: null
+    property MPrintDevice btDevice: null
     property bool isIP: true
     property string defaultValue: ""
 

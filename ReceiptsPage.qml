@@ -5,8 +5,8 @@ import com.mofing.bluetooth 1.0
 
 Rectangle {
     id: receiptsPage
-    property MBluetoothDeviceManager bt: null
-    property MBluetoothDevice btDevice: null
+    property MPrintDeviceManager bt: null
+    property MPrintDevice btDevice: null
     property int receiptsCurrentType: 0
 
     function exitPage()

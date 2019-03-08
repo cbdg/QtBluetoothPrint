@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-class MBluetoothPrintCommand;
+class MPrintCommand;
 class QBluetoothSocket;
 class QIODevice;
 class MOrderPrinter : public QObject
@@ -14,17 +14,21 @@ public:
 
     void printTakeoutOrder(const QString &orderJson);
     void printTakeoutOrder(QObject *orderObj);
+    void printTakeoutOrder(const QJsonObject &jsonObj);
     void printTest();
 
     //void initPrintCom(QBluetoothSocket *bluetoothSocket);
-    void initPrintCom(QIODevice *bluetoothSocket);
+    void initPrintCom(QIODevice *socket);
+    void setLetterPerLine(int lpl);
+    int letterPerLine() const;
 
 signals:
 
 public slots:
 
 private:
-    MBluetoothPrintCommand *_printCom;
+    MPrintCommand *_printCom;
+    int _letterPerLine;
 };
 
 #endif // MORDERPRINTER_H

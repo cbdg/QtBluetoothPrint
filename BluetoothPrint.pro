@@ -16,9 +16,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp \
     mbluetooth.cpp \
     cbinarization.cpp \
-    mbluetoothprintcommand.cpp \
-    mbluetoothdevice.cpp \
-    mbluetoothdevicemanager.cpp \
+    mprintcommand.cpp \
+    mprintdevice.cpp \
+    mprintdevicemanager.cpp \
     mlistmodel.cpp \
     morderprinter.cpp
 
@@ -40,10 +40,10 @@ HEADERS += \
     mbluetooth.h \
     mbluetooth_p.h \
     cbinarization.h \
-    mbluetoothprintcommand.h \
-    mbluetoothdevice.h \
-    mbluetoothdevice_p.h \
-    mbluetoothdevicemanager.h \
-    mbluetoothdevicemanager_p.h \
+    mprintcommand.h \
+    mprintdevice.h \
+    mprintdevice_p.h \
+    mprintdevicemanager.h \
+    mprintdevicemanager_p.h \
     mlistmodel.h \
     morderprinter.h

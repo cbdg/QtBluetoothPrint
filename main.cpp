@@ -1,7 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include "mbluetooth.h"
-#include "mbluetoothdevicemanager.h"
+#include "mprintdevicemanager.h"
 #include "mlistmodel.h"
 
 int main(int argc, char *argv[])
@@ -10,9 +9,8 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
-    qmlRegisterType<MBluetooth>("com.mofing.bluetooth", 1, 0, "MBluetooth");
-    qmlRegisterType<MBluetoothDeviceManager>("com.mofing.bluetooth", 1, 0, "MBluetoothDeviceManager");
-    qmlRegisterType<MBluetoothDevice>("com.mofing.bluetooth", 1, 0, "MBluetoothDevice");
+    qmlRegisterType<MPrintDeviceManager>("com.mofing.bluetooth", 1, 0, "MPrintDeviceManager");
+    qmlRegisterType<MPrintDevice>("com.mofing.bluetooth", 1, 0, "MPrintDevice");
     qmlRegisterType<MListModel>("com.mofing.bluetooth", 1, 0, "MListModel");
 
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));

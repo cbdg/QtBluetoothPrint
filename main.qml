@@ -44,7 +44,7 @@ ApplicationWindow {
         qmlPage.focus = true;
     }
 
-    MBluetoothDeviceManager {
+    MPrintDeviceManager {
         id: bt
     }
 

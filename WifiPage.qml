@@ -5,8 +5,8 @@ import com.mofing.bluetooth 1.0
 
 Rectangle {
     id: wifiPage
-    property MBluetoothDeviceManager bt: null
-    property MBluetoothDevice btDevice: null
+    property MPrintDeviceManager bt: null
+    property MPrintDevice btDevice: null
 
     function exitPage()
     {
@@ -176,7 +176,7 @@ Rectangle {
                     width: 30
                     height: width
                     visible: running
-                    running: bt.wifiDevice ? (bt.wifiDevice.socketConnectState == MBluetoothDevice.Connecting ? true : false) : false
+                    running: bt.wifiDevice ? (bt.wifiDevice.socketConnectState == MPrintDevice.Connecting ? true : false) : false
                 }
 
                 MouseArea {

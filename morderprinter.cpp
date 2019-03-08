@@ -1,10 +1,11 @@
 #include "morderprinter.h"
 #include <QBluetoothSocket>
-#include "mbluetoothprintcommand.h"
+#include "mprintcommand.h"
 
-MOrderPrinter::MOrderPrinter(QObject *parent) : QObject(parent)
+MOrderPrinter::MOrderPrinter(QObject *parent)
+    : QObject(parent)
+    , _letterPerLine(32)
 {
-
 }
 
 void MOrderPrinter::printTakeoutOrder(const QString &orderJson)
@@ -103,7 +104,17 @@ void MOrderPrinter::printTest()
 }
 
 //void MOrderPrinter::initPrintCom(QBluetoothSocket *bluetoothSocket)
-void MOrderPrinter::initPrintCom(QIODevice *bluetoothSocket)
+void MOrderPrinter::initPrintCom(QIODevice *socket)
 {
-    _printCom = new MBluetoothPrintCommand(bluetoothSocket, this);
+    _printCom = new MPrintCommand(socket, this);
+}
+
+void MOrderPrinter::setLetterPerLine(int lpl)
+{
+    _letterPerLine = lpl;
+}
+
+int MOrderPrinter::letterPerLine() const
+{
+    return _letterPerLine;
 }
