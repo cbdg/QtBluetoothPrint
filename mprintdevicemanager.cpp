@@ -642,8 +642,8 @@ void MPrintDeviceManager::readSelectDevice()
     settings.endGroup();
 
     settings.beginGroup("Wifi");
-    d->lastWifiIpAddress = settings.value("IpAddress").toString();
-    d->lastWifiPor = settings.value("Por", 1024).toInt();
+    d->lastWifiIpAddress = settings.value("IpAddress", "192.168.31.157").toString();
+    d->lastWifiPor = settings.value("Por", 8266).toInt();
     settings.endGroup();
 
     createPrintDevice();
@@ -690,6 +690,8 @@ void MPrintDeviceManager::writeSelectDevice()
     settings.setValue("IpAddress", d->lastWifiIpAddress);
     settings.setValue("Por", d->lastWifiPor);
     settings.endGroup();
+    qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<settingpath<<d->printType<<d->receiptsType<<d->lastBluetoothName<<d->lastBluetoothAddress<<d->lastBluetoothUuid<<d->lastWifiIpAddress<<d->lastWifiPor;
+
 }
 
 void MPrintDeviceManager::createPrintDevice()

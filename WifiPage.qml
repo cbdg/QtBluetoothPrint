@@ -215,6 +215,37 @@ Rectangle {
                     }
                 }
             }
+
+            Item {
+                width: 1
+                height: 20
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 50
+
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: "#d7d7d7"
+                    anchors.bottom: parent.bottom
+                }
+
+                Text {
+                    anchors.left: parent.left
+                    anchors.leftMargin: 16
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: qsTr("退出")
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        exitPage()
+                    }
+                }
+            }
         }
     }
 }

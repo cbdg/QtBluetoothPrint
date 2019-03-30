@@ -321,14 +321,14 @@ void MPrintDevice::tcpSocketConnected()
 void MPrintDevice::tcpSocketError(QAbstractSocket::SocketError error)
 {
     Q_D(MPrintDevice);
-    qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"==============================QAbstractSocket::SocketError"<<error<<d->port;
+    qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"==============================QAbstractSocket::SocketError"<<error<<d->ipAddressStr<<d->port;
     setSocketConnectState(MPrintDevice::Unconnect);
 }
 
 void MPrintDevice::tcpSocketDisconnected()
 {
     Q_D(MPrintDevice);
-    qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"==============================QAbstractSocket::Disconnected"<<d->port;
+    qWarning()<<__FILE__<<__FUNCTION__<<__LINE__<<"==============================QAbstractSocket::Disconnected"<<d->ipAddressStr<<d->port;
     setIsConnected(false);
     setSocketConnectState(MPrintDevice::Unconnect);
 }
